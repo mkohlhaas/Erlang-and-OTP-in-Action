@@ -10,7 +10,7 @@ Then, run the following in the Erlang shell:
 
 1> application:start(tcp_rpc).
 ok
-2> 
+2>
 
 After that, open another terminal window and use telnet
 to connect to the application, like this:
