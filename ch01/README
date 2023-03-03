@@ -5,4 +5,4 @@ then run the following in the Erlang shell:
 {ok,pingpong}
 2> pingpong:run().
 ok
-3> 
+3>

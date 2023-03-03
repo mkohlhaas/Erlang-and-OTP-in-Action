@@ -7,7 +7,7 @@ then run the following in the Erlang shell:
 
 1> tr_server:start_link().
 {ok,<0.34.0>}
-2> 
+2>
 
 After that, open another terminal window and use telnet
 to connect to the application, like this:
