@@ -1,10 +1,17 @@
 To build this code, run the following command:
+$ erlc -o ./ebin ./src/*.erl
 
-erlc -o ./ebin ./src/*.erl
+To generate documentation:
+$ erl –pa /ebin
+1> edoc:application(tcp_rpc, ".", []).
+
+To generate documentation from the main directory:
+$ erl –pa ch04/ebin
+1> edoc:application(tcp_rpc).
 
 To run the program, first start Erlang like this:
 
-erl -pa ./ebin
+$ erl -pa ./ebin
 
 Then, run the following in the Erlang shell:
 
