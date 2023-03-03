@@ -2,6 +2,13 @@ To build this code, run the following command:
 
 erlc *.erl
 
+Generate documentation: Start Erlang (erl).
+1> edoc:files(["tr_server.erl"], [{dir, "doc"}].
+
+To run the test: Start Erlang (erl) and do one of the following.
+1> eunit:test(tr_server).
+2> tr_server:test().
+
 To run the program, start Erlang (in the same directory),
 then run the following in the Erlang shell:
 
