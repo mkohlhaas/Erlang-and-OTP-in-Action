@@ -6,8 +6,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
-% -define(SERVER, ?MODULE).
--define(DEFAULT_LEASE_TIME, 60 * 60 * 24).
+-define(DEFAULT_LEASE_TIME, 5 * 60).
 
 -record(state, {value, lease_time, start_time}).
 
@@ -32,19 +31,6 @@ replace(Pid, Value) ->
 
 delete(Pid) ->
   gen_server:cast(Pid, delete).
-
-time_left(_StartTime, infinity) ->
-  infinity;
-time_left(StartTime, LeaseTime) ->
-  Now = calendar:local_time(),
-  CurrentTime = calendar:datetime_to_gregorian_seconds(Now),
-  TimeElapsed = CurrentTime - StartTime,
-  case LeaseTime - TimeElapsed of
-    Time when Time =< 0 ->
-      0;
-    Time ->
-      Time * 1000
-  end.
 
 %%%%%%%%%%%%%
 % Callbacks %
@@ -83,3 +69,25 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
+
+%%%%%%%%%%%%%%%%%%%%%%
+% Internal Functions %
+%%%%%%%%%%%%%%%%%%%%%%
+
+% Setting server timeouts:
+% If you forget to return a new timeout value in one of the call-back functions,
+% the timeout will revert to infinity. When you're using server timeouts,
+% it's important to remember to set them in EVERY clause of EVERY call-back function.
+
+time_left(_StartTime, infinity) ->
+  infinity;
+time_left(StartTime, LeaseTime) ->
+  Now = calendar:local_time(),
+  CurrentTime = calendar:datetime_to_gregorian_seconds(Now),
+  TimeElapsed = CurrentTime - StartTime,
+  case LeaseTime - TimeElapsed of
+    Time when Time =< 0 ->
+      0;
+    Time ->
+      Time * 1000
+  end.
