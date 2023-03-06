@@ -9,7 +9,11 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {target_resource_types, local_resource_tuples, found_resource_tuples}).
+% target_resource_types ∷ List Resource_Type, e.g. [simple_cache, logger], aka "I want"/wanted list.
+% local_resource_dict ∷ Dict (Resource_Type ⇒ [Resource]), e.g. simple_cache ⇒ [Pid], aka "I have".
+% found_resource_dict ∷ Dict (Resource_Type ⇒ [Resource]), e.g. simple_cache ⇒ [Pid], resources matching wanted list.
+
+-record(state, {target_resource_types, local_resource_dict, found_resource_dict}).
 
 %%%%%%%
 % API %
@@ -37,42 +41,44 @@ trade_resources() ->
 init([]) ->
   {ok,
    #state{target_resource_types = [],
-          local_resource_tuples = dict:new(),
-          found_resource_tuples = dict:new()}}.
+          local_resource_dict = dict:new(),
+          found_resource_dict = dict:new()}}.
 
 handle_call({fetch_resources, Type}, _From, State) ->
-  {reply, dict:find(Type, State#state.found_resource_tuples), State}.
+  {reply, dict:find(Type, State#state.found_resource_dict), State}.
 
 handle_cast({add_target_resource_type, Type}, State) ->
   TargetTypes = State#state.target_resource_types,
   NewTargetTypes = [Type | lists:delete(Type, TargetTypes)],
   {noreply, State#state{target_resource_types = NewTargetTypes}};
 handle_cast({add_local_resource, {Type, Resource}}, State) ->
-  ResourceTuples = State#state.local_resource_tuples,
-  NewResourceTuples = add_resource(Type, Resource, ResourceTuples),
-  {noreply, State#state{local_resource_tuples = NewResourceTuples}};
+  ResourceDict = State#state.local_resource_dict,
+  NewResourceDict = add_resource(Type, Resource, ResourceDict),
+  {noreply, State#state{local_resource_dict = NewResourceDict}};
 handle_cast(trade_resources, State) ->
-  ResourceTuples = State#state.local_resource_tuples,
+  ResourceDict = State#state.local_resource_dict,
   AllNodes = [node() | nodes()],
   lists:foreach(fun(Node) ->
-                   gen_server:cast({?SERVER, Node}, {trade_resources, {node(), ResourceTuples}})
+                   gen_server:cast({?SERVER, Node}, {trade_resources, {node(), ResourceDict}})
                 end,
                 AllNodes),
   {noreply, State};
 handle_cast({trade_resources, {ReplyTo, Remotes}},
-            #state{local_resource_tuples = Locals,
-                   target_resource_types = TargetTypes,
-                   found_resource_tuples = OldFound} =
+            #state{target_resource_types = TargetTypes,
+                   local_resource_dict = Locals,
+                   found_resource_dict = OldFound} =
               State) ->
+  % Add resources from calling node, but only the ones in the wanted list.
   FilteredRemotes = resources_for_types(TargetTypes, Remotes),
   NewFound = add_resources(FilteredRemotes, OldFound),
   case ReplyTo of
     noreply ->
       ok;
     _ ->
+      % Send the caller our local resource dictionary.
       gen_server:cast({?SERVER, ReplyTo}, {trade_resources, {noreply, Locals}})
   end,
-  {noreply, State#state{found_resource_tuples = NewFound}}.
+  {noreply, State#state{found_resource_dict = NewFound}}.
 
 handle_info(ok = _Info, State) ->
   {noreply, State}.
@@ -87,8 +93,8 @@ code_change(_OldVsn, State, _Extra) ->
 % Internal Functions %
 %%%%%%%%%%%%%%%%%%%%%%
 
-add_resources([{Type, Identifier} | T], Dict) ->
-  add_resources(T, add_resource(Type, Identifier, Dict));
+add_resources([{Type, Resource} | T], Dict) ->
+  add_resources(T, add_resource(Type, Resource, Dict));
 add_resources([], Dict) ->
   Dict.
 
@@ -101,10 +107,10 @@ add_resource(Type, Resource, Dict) ->
       dict:store(Type, [Resource], Dict)
   end.
 
-resources_for_types(Types, ResourceTuples) ->
+resources_for_types(Types, ResourceDict) ->
   Fun =
     fun(Type, Acc) ->
-       case dict:find(Type, ResourceTuples) of
+       case dict:find(Type, ResourceDict) of
          {ok, List} -> [{Type, Resource} || Resource <- List] ++ Acc;
          error -> Acc
        end
