@@ -24,7 +24,7 @@ ok
 ok
 4> application:start(simple_cache).
 ok
-5> 
+5>
 
 (Remember that the resource discovery will make simple_cache
 wait several seconds when it starts.)
