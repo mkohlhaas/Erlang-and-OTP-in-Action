@@ -6,7 +6,7 @@ https://www.erlang.org/doc/man/erl.html#max_processes
 To increase number of processes (1024-134217727; default 262144):
 
 $ erl +P 20000000
-1> erlang:system_info(port_limit).
+1> erlang:system_info(process_limit).
 33554432
 2> ring:run(100, 1000).
 0.0686978
