@@ -1,3 +1,5 @@
+% supervisor with dynamic children (simple_one_for_one restart strategy)
+
 -module(sc_sup).
 
 -behaviour(supervisor).

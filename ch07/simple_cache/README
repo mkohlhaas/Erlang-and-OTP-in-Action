@@ -12,4 +12,4 @@ Then, run the following in the Erlang shell:
 ok
 2> application:start(simple_cache).
 ok
-3> 
+3>

@@ -19,4 +19,4 @@ erl -sname mynode -pa ./simple_cache/ebin -pa ./resource_discovery/ebin/ -boot .
 
 (Recall that the initial node discovery waits a few seconds at startup.)
 
-You can now e.g. run appmon:start() to inspect your running system.
+You can now e.g. run observer:start() to inspect your running system.

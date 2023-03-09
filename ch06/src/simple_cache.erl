@@ -1,3 +1,5 @@
+% API interface for user of simple_cache.
+
 -module(simple_cache).
 
 -export([insert/2, insert/3, lookup/1, delete/1]).

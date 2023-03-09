@@ -8,5 +8,17 @@ erl -pa ./ebin
 
 Then, run the following in the Erlang shell:
 
-1> application:start(simple_cache).
+1> observer:start().
 ok
+2> [simple_cache:insert(X, X, 15) || X <- lists:seq(1,100)].
+[ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,
+ ok,ok,ok,ok,ok,ok,ok,ok,ok,ok|...]
+3> simple_cache:lookup(1).
+{ok,1}
+4> simple_cache:lookup(100).
+{ok,100}
+5> simple_cache:lookup(2).
+{ok,2}
+6> simple_cache:lookup(200).
+{error,not_found}
+7>

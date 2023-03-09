@@ -12,11 +12,10 @@
 
 -behavior(gen_server).
 
+% for testing (see start_test() in line 131)
 -include_lib("eunit/include/eunit.hrl").
 
-%% API
 -export([start_link/1, start_link/0, start/0, start/1, get_count/0, stop/0]).
-%% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
@@ -45,7 +44,7 @@ start_link(Port) ->
 start_link() ->
   start_link(?DEFAULT_PORT).
 
-% start stand-alone server
+% start stand-alone server (no supervisor)
 start(Port) ->
   gen_server:start({local, ?SERVER}, ?MODULE, [Port], []).
 

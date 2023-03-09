@@ -1,3 +1,6 @@
+% For every key there is a separate process (a simplce cache element = sc_element) which stores the value!
+% Implemented as gen_server. Is used as a dynamic child for the supervisor.
+
 -module(sc_element).
 
 -behaviour(gen_server).
@@ -6,7 +9,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
--define(DEFAULT_LEASE_TIME, 5 * 60).
+-define(DEFAULT_LEASE_TIME, 60).
 
 -record(state, {value, lease_time, start_time}).
 
@@ -35,6 +38,9 @@ delete(Pid) ->
 %%%%%%%%%%%%%
 % Callbacks %
 %%%%%%%%%%%%%
+
+% Actually not a good idea to user time-outs.
+% Will bog down the server when you have many processes.
 
 init([Value, LeaseTime]) ->
   Now = calendar:local_time(),

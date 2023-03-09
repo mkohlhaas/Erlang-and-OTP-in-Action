@@ -1,3 +1,6 @@
+% Store for (key -> pid) mappings; basically a wrapper for ets (erlang term storage).
+% Every process (pid) stores the value.
+
 -module(sc_store).
 
 -export([init/0, insert/2, delete/1, lookup/1]).
