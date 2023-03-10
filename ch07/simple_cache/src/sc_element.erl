@@ -14,8 +14,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--define(SERVER, ?MODULE).
--define(DEFAULT_LEASE_TIME, (60 * 60 * 24)).
+-define(DEFAULT_LEASE_TIME, (60)).
 
 -record(state, {value, lease_time, start_time}).
 
@@ -73,6 +72,8 @@ handle_cast(delete, State) ->
     {stop, normal, State}.
 
 handle_info(timeout, State) ->
+    #state{value = Value} = State,
+    sc_event:timeout(Value),
     {stop, normal, State}.
 
 terminate(_Reason, _State) ->

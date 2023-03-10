@@ -30,16 +30,19 @@ init([]) ->
 % We are just logging events. We could also use OpenTelemetry!
 
 handle_event({create, {Key, Value}}, State) ->
-  error_logger:info_msg("create(~w, ~w)~n", [Key, Value]),
+  error_logger:info_msg("create(Key:~w, Value:~w)~n", [Key, Value]),
   {ok, State};
 handle_event({lookup, Key}, State) ->
-  error_logger:info_msg("lookup(~w)~n", [Key]),
+  error_logger:info_msg("lookup(Key:~w)~n", [Key]),
   {ok, State};
 handle_event({delete, Key}, State) ->
-  error_logger:info_msg("delete(~w)~n", [Key]),
+  error_logger:info_msg("delete(Key: ~w)~n", [Key]),
   {ok, State};
 handle_event({replace, {Key, Value}}, State) ->
-  error_logger:info_msg("replace(~w, ~w)~n", [Key, Value]),
+  error_logger:info_msg("replace(Key:~w, Value:~w)~n", [Key, Value]),
+  {ok, State};
+handle_event({timeout, Value}, State) ->
+  error_logger:info_msg("timeout(Value: ~w)~n", [Value]),
   {ok, State}.
 
 handle_call(_Request, State) ->

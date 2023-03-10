@@ -1,7 +1,7 @@
 -module(sc_event).
 
 -export([start_link/0, add_handler/2, delete_handler/2]).
--export([lookup/1, create/2, replace/2, delete/1]).
+-export([lookup/1, create/2, replace/2, delete/1, timeout/1]).
 
 -define(SERVER, ?MODULE).
 
@@ -46,3 +46,7 @@ replace(Key, Value) ->
 % delete event
 delete(Key) ->
   gen_event:notify(?SERVER, {delete, Key}).
+
+% timeout event
+timeout(Key) ->
+  gen_event:notify(?SERVER, {timeout, Key}).
