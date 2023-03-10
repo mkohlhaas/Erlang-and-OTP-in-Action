@@ -9,10 +9,9 @@
 
 -define(SERVER, ?MODULE).
 
-% target_resource_types ∷ List Resource_Type, e.g. [simple_cache, logger], aka "I want"/wanted list.
-% local_resource_dict ∷ Dict (Resource_Type ⇒ [Resource]), e.g. simple_cache ⇒ [Pid], aka "I have".
-% found_resource_dict ∷ Dict (Resource_Type ⇒ [Resource]), e.g. simple_cache ⇒ [Pid], resources matching wanted list.
-
+% target_resource_types ∷ List Resource_Type, e.g. [simple_cache, logger],            aka "I want"-list.
+% local_resource_dict ∷ Dict (Resource_Type ⇒ [Resource]), e.g. simple_cache ⇒ [Pid], aka "I have"-list.
+% found_resource_dict ∷ Dict (Resource_Type ⇒ [Resource]), e.g. simple_cache ⇒ [Pid], all resources of the cluster matching "I want"-list. Answers: Where is all the stuff I want?
 -record(state, {target_resource_types, local_resource_dict, found_resource_dict}).
 
 %%%%%%%
@@ -22,15 +21,20 @@
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
+% add resource type to "I want"-list
 add_target_resource_type(Type) ->
   gen_server:cast(?SERVER, {add_target_resource_type, Type}).
 
+% add resource to the local "I have"-list
 add_local_resource(Type, Resource) ->
   gen_server:cast(?SERVER, {add_local_resource, {Type, Resource}}).
 
+% get a list of all available resources in the cluster for a specific resource type
 fetch_resources(Type) ->
   gen_server:call(?SERVER, {fetch_resources, Type}).
 
+% Trade resources means exchanging resource information among all nodes in the cluster.
+% Send a message to all nodes asking for their resources and publish own resources to all other nodes.
 trade_resources() ->
   gen_server:cast(?SERVER, trade_resources).
 
@@ -58,24 +62,26 @@ handle_cast({add_local_resource, {Type, Resource}}, State) ->
 handle_cast(trade_resources, State) ->
   ResourceDict = State#state.local_resource_dict,
   AllNodes = [node() | nodes()],
+  % send available local resources to all nodes
   lists:foreach(fun(Node) ->
                    gen_server:cast({?SERVER, Node}, {trade_resources, {node(), ResourceDict}})
                 end,
                 AllNodes),
   {noreply, State};
+% reply from all nodes with their available resources
 handle_cast({trade_resources, {ReplyTo, Remotes}},
             #state{target_resource_types = TargetTypes,
                    local_resource_dict = Locals,
                    found_resource_dict = OldFound} =
               State) ->
-  % Add resources from calling node, but only the ones in the wanted list.
+  % Add resources from calling node, but only the ones in our "I want"-list.
   FilteredRemotes = resources_for_types(TargetTypes, Remotes),
   NewFound = add_resources(FilteredRemotes, OldFound),
   case ReplyTo of
     noreply ->
       ok;
     _ ->
-      % Send the caller our local resource dictionary.
+      % Send the remote node who called us our local resource dictionary.
       gen_server:cast({?SERVER, ReplyTo}, {trade_resources, {noreply, Locals}})
   end,
   {noreply, State#state{found_resource_dict = NewFound}}.
@@ -93,11 +99,16 @@ code_change(_OldVsn, State, _Extra) ->
 % Internal Functions %
 %%%%%%%%%%%%%%%%%%%%%%
 
+% Local PIDs are translated/displayed automagically on remote nodes. See README for an example.
+% See the PIDs in the dictionary on the different nodes.
+
+% returns updated dictionary
 add_resources([{Type, Resource} | T], Dict) ->
   add_resources(T, add_resource(Type, Resource, Dict));
 add_resources([], Dict) ->
   Dict.
 
+% returns updated dictionary
 add_resource(Type, Resource, Dict) ->
   case dict:find(Type, Dict) of
     {ok, ResourceList} ->
@@ -107,6 +118,7 @@ add_resource(Type, Resource, Dict) ->
       dict:store(Type, [Resource], Dict)
   end.
 
+% returns [{Type, Resource}] (a list of all resource types and their resources we are interested in)
 resources_for_types(Types, ResourceDict) ->
   Fun =
     fun(Type, Acc) ->
