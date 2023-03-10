@@ -1,4 +1,4 @@
--module(die_please).
+-module(die_please2).
 
 -behaviour(gen_server).
 
@@ -7,12 +7,20 @@
          code_change/3]).
 
 -define(SERVER, ?MODULE).
--define(SLEEP_TIME, 2 * 1000).
+-define(SLEEP_TIME, 2 * 1000). % sleep for 2 secs
 
 -record(state, {}).
 
+%%%%%%%
+% API %
+%%%%%%%
+
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+
+%%%%%%%%%%%%%
+% Callbacks %
+%%%%%%%%%%%%%
 
 init([]) ->
   {ok, #state{}, ?SLEEP_TIME}.
@@ -25,7 +33,7 @@ handle_cast(_Msg, State) ->
   {noreply, State}.
 
 handle_info(timeout, State) ->
-  i_want_to_die = right_now, % causes an exception
+  i_want_to_die = right_now, % matching will fail and cause an exception (on purpose)
   {noreply, State}.
 
 terminate(_Reason, _State) ->

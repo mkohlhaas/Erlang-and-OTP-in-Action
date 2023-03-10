@@ -1,4 +1,4 @@
--module(die_please2).
+-module(die_please1).
 
 -export([go/0]).
 
@@ -7,4 +7,4 @@
 go() ->
   %% just sleep for a while, then crash
   timer:sleep(?SLEEP_TIME),
-  i_really_want_to_die = right_now.
+  i_really_want_to_die = right_now. % matching will fail and cause an exception (on purpose)

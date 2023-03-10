@@ -1,15 +1,84 @@
+Only two more modules added:
+src/sc_event.erl        (creates event stream)
+src/sc_event_logger.erl (event handler)
+
+In the API module src/simple_cache.erl we fire events using src/sc_event.erl.
+
+From the documentation.
+$ erl -man gen_event
+
+       gen_event module                     Callback module
+       = src/sc_event.erl                   = src/sc_event_logger.erl
+       * = used in sc_event                 * = used in sc_event_logger
+       ----------------                     ---------------
+       gen_event:start
+       gen_event:start_monitor
+     * gen_event:start_link       ----->    -
+
+     * gen_event:add_handler
+       gen_event:add_sup_handler  ----->  * Module:init/1
+
+     * gen_event:notify
+       gen_event:sync_notify      ----->  * Module:handle_event/2
+
+       gen_event:send_request
+       gen_event:call             ----->  * Module:handle_call/2
+
+       -                          ----->  * Module:handle_info/2
+
+     * gen_event:delete_handler   ----->    Module:terminate/2
+
+       gen_event:swap_handler
+       gen_event:swap_sup_handler ----->  * Module1:terminate/2
+                                            Module2:init/1
+
+       gen_event:which_handlers   ----->    -
+
+       gen_event:stop             ----->    Module:terminate/2
+
+       -                          ----->  * Module:code_change/3
+
+An OTP application always has a single root supervisor that starts everything else.
+The gen_event container that the sc_event module starts is a service that should be managed by a supervisor.
+We cannot use the element supervisor as it is a simple_one_for_one gen_server that can only start one type of child.
+
+Solution:
+
+                                root supervisor
+                                (src/sc_sup.erl)
+                                        |
+                   +--------------------+--------------------+
+                   |                                         |
+         element supervisor                         custom event manager
+         (src/sc_element_sup.erl)                   (src/sc_event.erl)
+         (gen_server)                               (gen_event)
+         (simple_one_for_one)
+
 To build this code, run the following command:
 
-erlc -o ./ebin ./src/*.erl
+$ erlc -o ./ebin ./src/*.erl
 
 To run the program, first start Erlang like this:
 
-erl -pa ./ebin
+$ erl -pa ./ebin
 
 Then, run the following in the Erlang shell:
 
+1> observer:start().
+ok
 1> application:start(sasl).
 ok
 2> application:start(simple_cache).
 ok
-3>
+> [simple_cache:insert(X, X, 15) || X <- lists:seq(1,100)].
+[ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,
+ ok,ok,ok,ok,ok,ok,ok,ok,ok,ok|...]
+> simple_cache:lookup(1).
+{ok,1}
+> simple_cache:lookup(100).
+{ok,100}
+> simple_cache:lookup(2).
+{ok,2}
+> simple_cache:lookup(200).
+{error,not_found}
+>

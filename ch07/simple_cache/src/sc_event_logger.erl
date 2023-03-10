@@ -8,14 +8,26 @@
 
 -record(state, {}).
 
+%%%%%%%
+% API %
+%%%%%%%
+
+% just convenient wrappers around sc_event calls
+
 add_handler() ->
   sc_event:add_handler(?MODULE, []).
 
 delete_handler() ->
   sc_event:delete_handler(?MODULE, []).
 
+%%%%%%%%%%%%%
+% Callbacks %
+%%%%%%%%%%%%%
+
 init([]) ->
   {ok, #state{}}.
+
+% We are just logging events. We could also use OpenTelemetry!
 
 handle_event({create, {Key, Value}}, State) ->
   error_logger:info_msg("create(~w, ~w)~n", [Key, Value]),
