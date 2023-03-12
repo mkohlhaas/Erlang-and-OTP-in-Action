@@ -8,11 +8,19 @@
 
 -record(state, {}).
 
+%%%%%%%
+% API %
+%%%%%%%
+
 add_handler() ->
   sc_event:add_handler(?MODULE, []).
 
 delete_handler() ->
   sc_event:delete_handler(?MODULE, []).
+
+%%%%%%%%%%%%%
+% Callbacks %
+%%%%%%%%%%%%%
 
 init([]) ->
   {ok, #state{}}.

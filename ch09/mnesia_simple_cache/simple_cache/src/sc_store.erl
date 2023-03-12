@@ -6,12 +6,17 @@
 
 -record(key_to_pid, {key, pid}).
 
+%%%%%%%
+% API %
+%%%%%%%
+
 init() ->
+  % clean slate for Mnesia
   mnesia:stop(),
   mnesia:delete_schema([node()]),
   mnesia:start(),
-  {ok, CacheNodes} = resource_discovery:fetch_resources(simple_cache),
-  dynamic_db_init(lists:delete(node(), CacheNodes)).
+  {ok, SimpleCacheNodes} = resource_discovery:fetch_resources(simple_cache),
+  dynamic_db_init(lists:delete(node(), SimpleCacheNodes)).
 
 insert(Key, Pid) ->
   mnesia:dirty_write(#key_to_pid{key = Key, pid = Pid}).
@@ -37,22 +42,27 @@ delete(Pid) ->
       ok
   end.
 
-%% Internal Functions
+%%%%%%%%%%%%%%%%%%%%%%
+% Internal Functions %
+%%%%%%%%%%%%%%%%%%%%%%
 
+% first Mnesia node creates the key_to_pid-table which will be replicated to other nodes
 dynamic_db_init([]) ->
   mnesia:create_table(key_to_pid,
                       [{index, [pid]}, {attributes, record_info(fields, key_to_pid)}]);
 dynamic_db_init(CacheNodes) ->
   add_extra_nodes(CacheNodes).
 
+% add Mnesia nodes to Mnesia cluster
 add_extra_nodes([Node | T]) ->
-  case mnesia:change_config(extra_db_nodes, [Node]) of
-    {ok, [Node]} ->
-      mnesia:add_table_copy(key_to_pid, node(), ram_copies),
+  case mnesia:change_config(extra_db_nodes, [Node]) of % try to connect to other Mnesia instance
+    {ok, [Node]} -> % this node is connected to Node
+      mnesia:add_table_copy(key_to_pid, node(), ram_copies), % make a ram-copy of key_to_pid-table at this node
 
       Tables = mnesia:system_info(tables),
       mnesia:wait_for_tables(Tables, ?WAIT_FOR_TABLES);
     _ ->
+      % Base case missing? No. Just let it crash if we cannot sync with another Mnesia instance.
       add_extra_nodes(T)
   end.
 

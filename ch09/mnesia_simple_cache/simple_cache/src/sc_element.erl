@@ -6,7 +6,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
--define(DEFAULT_LEASE_TIME, 60 * 60 * 24).
+-define(DEFAULT_LEASE_TIME, 20).
 
 -record(state, {value, lease_time, start_time}).
 
