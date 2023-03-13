@@ -1,22 +1,78 @@
-To build this code, run the following commands:
+Release < Application < Module
 
-erlc -o ./simple_cache/ebin ./simple_cache/src/*.erl
-erlc -o ./resource_discovery/ebin ./resource_discovery/src/*.erl
+application_controller starts applications. Acts a bit like an event_manager.
+A release runs only necessary modules in the so-called target system.
 
-Then run the following (all on a single line) to generate the .boot file:
+1. A release describes a running Erlang runtime system.
+2. A release has a version.
+3. A release aggregates a number of versioned applications along with metadata on how to manage the system.
+4. Installing a release on a host machine produces a target system.
 
-erl -noshell -pa ./simple_cache/ebin -pa ./resource_discovery/ebin -eval 'systools:make_script("simple_cache", [local])' -s init stop
+Different tools to make a release: systools, reltool, relx
 
-First start one or two contact nodes. Ensure that the node names
-in the sys.config files match your host name, and/or use -sname
-instead of -name. For example, do:
+How to create a release (using systools):
+1. Decide which applications should be included.
+2. Create a release metadata (.rel) file describing the release's contents.     <<< .rel file
+3. Create the boot script.                                                      <<< .script, .boot file
+4. Create a system configuration file (optional, but you typically have one).   <<< .config
+5. Pack everything in a single package file.                                    <<< .tar
 
-erl -sname contact1 -detached
+Simple Cache Example:
+1. Decide which applications should be included.
+   simple_cache, resource_discovery, stdlib, kernel, sasl, and mnesia
+2. Create a release metadata (.rel) file describing the release's contents.
+   $ erl -man rel
+   see simple_cache.rel (You can put this file in any directory you want during development.)
+   Needs versions of erts and all the necessary applications.
+   How to check your erts version:
+   a) $ erl
+                           here
+                            |
+      Erlang/OTP 25 [erts-13.1.4] [source] [64-bit] [smp:8:4] [ds:8:4:10] [async-threads:1] [jit:ns]
 
-Then, start the system like this (all on a single line):
+      Eshell V13.1.4  (abort with ^G)
+      1>
+   b) $ erl
+      Ctrl-C
+      BREAK: (a)bort (A)bort with dump (c)ontinue (p)roc info (i)nfo
+       (l)oaded (v)ersion (k)ill (D)b-tables (d)istribution
+      v
+                                       here
+                                        |
+      Erlang (BEAM) emulator version 13.1.4
+   For the versions of the applications you could fill in dummy versions. Erlang will complain and spit out the correct versions in the next step.
+3. Create the boot script.
+   $ erl -man systools
+   Run the Erlang shell from the location of the .rel file and run make_script:
+   $ erl -pa ./simple_cache/ebin -pa ./resource_discovery/ebin
+   1> systools:make_script("simple_cache", [local]).
+   ok
+   This creates two files: simple_cache.script and simple_cache.boot
+   The boot file is a compiled version of the script file.
+4. Create a system configuration file (optional, but you typically have one).
+   $ erl -man config
+   see sys.config
+   Start system with release and config file: (In our case we also have to start the two contact nodes.)
+   $ erl –sname cache –boot ./simple_cache –config ./sys
+   $ observer:start().                                               <<< check that all applications are running
+   When you start erl with '-mode embedded' all modules will be loaded but no further modules.
+5. Pack everything in a single package file.
+   $ erl -pa ./simple_cache/ebin -pa ./resource_discovery/ebin
+   1> systools:make_script("simple_cache", []).                      <<< this time no local flag
+   2> systools:make_tar("simple_cache", [{erts, code:root_dir()}]).  <<< include erts in the package
+   Creates simple_cache.tar.gz. This is the compressed tarball that contains all the release files!
+   In the tar file there is erts-x.y.z/bin/erl.src which will be copied to erl after having replaced %FINAL_ROOTDIR% in this file.
+   You could use following script and call it install.sh:
+   #!/bin/sh
+   ROOT=`pwd`
+   DIR=./erts-13.1.4/bin
+   sed s:%FINAL_ROOTDIR%:$ROOT: $DIR/erl.src > $DIR/erl
+   On p.256 there are more detailed hints what you could do to make the release tar a bit more streamlined.
 
-erl -sname mynode -pa ./simple_cache/ebin -pa ./resource_discovery/ebin/ -boot ./simple_cache -config sys
+Installing a Release
+Untar the tar file. It is completely independent of an Erlang installation!
 
-(Recall that the initial node discovery waits a few seconds at startup.)
-
-You can now e.g. run observer:start() to inspect your running system.
+See also:
+https://learnyousomeerlang.com/release-is-the-word (uses systools and reltool) and
+https://github.com/erlware/relx/wiki and
+https://www.erlang-in-anger.com/

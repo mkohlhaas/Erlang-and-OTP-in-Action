@@ -39,7 +39,7 @@ delete(Pid) ->
 % Callbacks %
 %%%%%%%%%%%%%
 
-% Actually not a good idea to user time-outs.
+% Actually not a good idea to use time-outs.
 % Will bog down the server when you have many processes.
 
 init([Value, LeaseTime]) ->
