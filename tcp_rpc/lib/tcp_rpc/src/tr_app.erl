@@ -11,9 +11,9 @@
 
 %% Application callbacks
 -export([
-     start/2,
-     stop/1
-     ]).
+    start/2,
+    stop/1
+]).
 
 %%%===================================================================
 %%% Application callbacks
@@ -37,10 +37,10 @@
 %%--------------------------------------------------------------------
 start(_StartType, _StartArgs) ->
     case tr_sup:start_link() of
-      {ok, Pid} ->
-          {ok, Pid};
-      Other ->
-          {error, Other}
+        {ok, Pid} ->
+            {ok, Pid};
+        Other ->
+            {error, Other}
     end.
 
 %%--------------------------------------------------------------------

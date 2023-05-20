@@ -9,12 +9,12 @@
 -module(resource_discovery).
 
 -export([
-	 add_local_resource/2,
-	 add_target_resource_type/1,
-	 fetch_resources/1,
-	 delete_resource/2,
-	 trade_resources/0
-	]).
+    add_local_resource/2,
+    add_target_resource_type/1,
+    fetch_resources/1,
+    delete_resource/2,
+    trade_resources/0
+]).
 
 %%%===================================================================
 %%% API

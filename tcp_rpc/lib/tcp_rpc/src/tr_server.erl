@@ -16,15 +16,21 @@
 
 %% API
 -export([
-         start_link/0,
-         start_link/1,
-         get_count/0,
-         stop/0
-        ]).
+    start_link/0,
+    start_link/1,
+    get_count/0,
+    stop/0
+]).
 
 %% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2,
+    terminate/2,
+    code_change/3
+]).
 
 -define(SERVER, ?MODULE).
 -define(DEFAULT_PORT, 1055).
@@ -178,9 +184,11 @@ do_rpc(Socket, RawData) ->
 split_out_mfa(RawData) ->
     MFA = re:replace(RawData, "\r\n$", "", [{return, list}]),
     {match, [M, F, A]} =
-        re:run(MFA,
-               "(.*):(.*)\s*\\((.*)\s*\\)\s*.\s*$",
-                   [{capture, [1,2,3], list}, ungreedy]),
+        re:run(
+            MFA,
+            "(.*):(.*)\s*\\((.*)\s*\\)\s*.\s*$",
+            [{capture, [1, 2, 3], list}, ungreedy]
+        ),
     {list_to_atom(M), list_to_atom(F), args_to_terms(A)}.
 
 args_to_terms(RawArgs) ->
@@ -188,10 +196,11 @@ args_to_terms(RawArgs) ->
     {ok, Args} = erl_parse:parse_term(Toks),
     Args.
 
-
 %%% Unit tests
 
 split_out_mfa_test() ->
     RawData = "io:format(\"hello ~p~n\", [testing]).\r\n",
-    ?assertMatch({io, format, ["hello ~p~n", [testing]]},
-		 split_out_mfa(RawData)).
+    ?assertMatch(
+        {io, format, ["hello ~p~n", [testing]]},
+        split_out_mfa(RawData)
+    ).

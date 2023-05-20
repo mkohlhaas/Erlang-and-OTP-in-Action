@@ -1,21 +1,25 @@
 -module(gen_web_server).
 
 %% API
--export([start_link/3, start_link/4,
-         http_reply/1, http_reply/2, http_reply/3]).
+-export([
+    start_link/3, start_link/4,
+    http_reply/1, http_reply/2, http_reply/3
+]).
 
 -export([behaviour_info/1]).
 
 behaviour_info(callbacks) ->
-    [{init,1},
-     {head, 3},
-     {get, 3},
-     {delete, 3},
-     {options, 4},
-     {post, 4},
-     {put, 4},
-     {trace, 4},
-     {other_methods, 4}];
+    [
+        {init, 1},
+        {head, 3},
+        {get, 3},
+        {delete, 3},
+        {options, 4},
+        {post, 4},
+        {put, 4},
+        {trace, 4},
+        {other_methods, 4}
+    ];
 behaviour_info(_Other) ->
     undefined.
 
@@ -31,9 +35,13 @@ start_link(Callback, IP, Port, UserArgs) ->
 http_reply(Code, Headers, Body) ->
     ContentBytes = iolist_to_binary(Body),
     Length = byte_size(ContentBytes),
-    [io_lib:format("HTTP/1.1 ~s\r\n~sContent-Length: ~w\r\n\r\n",
-                   [response(Code), headers(Headers), Length]),
-     ContentBytes].
+    [
+        io_lib:format(
+            "HTTP/1.1 ~s\r\n~sContent-Length: ~w\r\n\r\n",
+            [response(Code), headers(Headers), Length]
+        ),
+        ContentBytes
+    ].
 
 http_reply(Code) ->
     http_reply(Code, <<>>).

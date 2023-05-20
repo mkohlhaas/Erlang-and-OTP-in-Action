@@ -17,8 +17,7 @@ start_child() ->
     supervisor:start_child(?SERVER, []).
 
 init([Port]) ->
-    Server = {hi_server, {hi_server, start_link, [Port]},
-              permanent, 2000, worker, [hi_server]},
+    Server = {hi_server, {hi_server, start_link, [Port]}, permanent, 2000, worker, [hi_server]},
     Children = [Server],
     RestartStrategy = {one_for_one, 0, 1},
     {ok, {RestartStrategy, Children}}.

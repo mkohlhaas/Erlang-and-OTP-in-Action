@@ -1,11 +1,11 @@
 -module(sc_store).
 
 -export([
-         init/0,
-         insert/2,
-         delete/1,
-         lookup/1
-        ]).
+    init/0,
+    insert/2,
+    delete/1,
+    lookup/1
+]).
 
 -define(TABLE_ID, ?MODULE).
 
@@ -19,7 +19,7 @@ insert(Key, Pid) ->
 lookup(Key) ->
     case ets:lookup(?TABLE_ID, Key) of
         [{Key, Pid}] -> {ok, Pid};
-        []           -> {error, not_found}
+        [] -> {error, not_found}
     end.
 
 delete(Pid) ->

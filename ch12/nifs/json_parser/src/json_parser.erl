@@ -13,7 +13,7 @@
 
 init() ->
     case code:priv_dir(?APPNAME) of
-        {error, _} -> 
+        {error, _} ->
             error_logger:format("~w priv dir not found~n", [?APPNAME]),
             exit(error);
         PrivDir ->
@@ -22,4 +22,5 @@ init() ->
 
 %% @doc Parses a document given as a binary
 parse_document(_Data) ->
-    erlang:nif_error(nif_not_loaded).  % help Dialyzer and friends
+    % help Dialyzer and friends
+    erlang:nif_error(nif_not_loaded).

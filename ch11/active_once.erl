@@ -8,7 +8,7 @@ start() ->
     loop(Socket).
 
 loop(Socket) ->
-    inet:setopts(Socket, [{active,once}]),
+    inet:setopts(Socket, [{active, once}]),
     receive
         {tcp, Socket, Data} ->
             io:format("got ~p~n", [Data]),

@@ -75,7 +75,7 @@ ensure_contact() ->
             wait_for_nodes(ContactNodes, WaitTime)
     end.
 
-ensure_contact([Node|T]) ->
+ensure_contact([Node | T]) ->
     case net_adm:ping(Node) of
         pong ->
             lists:foreach(fun(N) -> net_adm:ping(N) end, T);
@@ -102,5 +102,5 @@ wait_for_nodes(ContactNodes, WaitSlice, Iterations) ->
 get_env(AppName, Key, Default) ->
     case application:get_env(AppName, Key) of
         undefined -> {ok, Default};
-        Found     -> Found
+        Found -> Found
     end.

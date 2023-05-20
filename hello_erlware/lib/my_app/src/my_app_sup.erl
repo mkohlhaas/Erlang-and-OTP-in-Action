@@ -29,13 +29,13 @@ init([]) ->
     Shutdown = 2000,
     Type = worker,
 
-    AChild = {ma_hello_server, {ma_hello_server, start_link, []},
-              Restart, Shutdown, Type, [ma_hello_server]},
+    AChild =
+        {ma_hello_server, {ma_hello_server, start_link, []}, Restart, Shutdown, Type, [
+            ma_hello_server
+        ]},
 
     {ok, {SupFlags, [AChild]}}.
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-

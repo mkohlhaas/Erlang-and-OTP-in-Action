@@ -4,7 +4,7 @@
 %%% @copyright 2008 Erlware
 %%% @doc This module defines a server process that listens for incoming
 %%%      TCP connections and allows the user to execute commands via
-%%%      that TCP stream 
+%%%      that TCP stream
 %%% @end
 %%%-------------------------------------------------------------------
 -module(ti_server).
@@ -13,14 +13,20 @@
 
 %% API
 -export([
-	 start_link/1
-	]).
+    start_link/1
+]).
 
 %% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-	 terminate/2, code_change/3]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2,
+    terminate/2,
+    code_change/3
+]).
 
--define(SERVER, ?MODULE). 
+-define(SERVER, ?MODULE).
 
 -record(state, {lsock}).
 
@@ -98,21 +104,25 @@ handle_cast(stop, State) ->
 %%--------------------------------------------------------------------
 handle_info({tcp, Socket, RawData}, State) ->
     try
-	Result = 
-	    case string:tokens(RawData, "|\r\n") of
-	        [Function, RawArgString] ->
-		    {ok, Toks, _Line} = erl_scan:string(RawArgString ++ ". "),
-		    {ok, Args} = erl_parse:parse_term(Toks),
-		    apply(simple_cache, list_to_atom(Function), Args);
-	        _Error ->
-		    {error, bad_request}
-	end,
-	    gen_tcp:send(Socket,
-		     lists:flatten(io_lib:fwrite("~p~n", [Result])))
-    catch 
-	_C:E ->
-	        gen_tcp:send(Socket,
-		     lists:flatten(io_lib:fwrite("~p~n", [E])))
+        Result =
+            case string:tokens(RawData, "|\r\n") of
+                [Function, RawArgString] ->
+                    {ok, Toks, _Line} = erl_scan:string(RawArgString ++ ". "),
+                    {ok, Args} = erl_parse:parse_term(Toks),
+                    apply(simple_cache, list_to_atom(Function), Args);
+                _Error ->
+                    {error, bad_request}
+            end,
+        gen_tcp:send(
+            Socket,
+            lists:flatten(io_lib:fwrite("~p~n", [Result]))
+        )
+    catch
+        _C:E ->
+            gen_tcp:send(
+                Socket,
+                lists:flatten(io_lib:fwrite("~p~n", [E]))
+            )
     end,
     {noreply, State};
 handle_info(timeout, #state{lsock = LSock} = State) ->
@@ -148,4 +158,3 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-

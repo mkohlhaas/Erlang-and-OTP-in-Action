@@ -46,7 +46,7 @@ ensure_contact(ContactNodes) ->
 
 wait_for_nodes(MinNodes, WaitTime) ->
     Slices = 10,
-    SliceTime = round(WaitTime/Slices),
+    SliceTime = round(WaitTime / Slices),
     wait_for_nodes(MinNodes, SliceTime, Slices).
 
 wait_for_nodes(_MinNodes, _SliceTime, 0) ->
@@ -54,7 +54,7 @@ wait_for_nodes(_MinNodes, _SliceTime, 0) ->
 wait_for_nodes(MinNodes, SliceTime, Iterations) ->
     case length(nodes()) > MinNodes of
         true ->
-          ok;
+            ok;
         false ->
             timer:sleep(SliceTime),
             wait_for_nodes(MinNodes, SliceTime, Iterations - 1)
@@ -62,6 +62,6 @@ wait_for_nodes(MinNodes, SliceTime, Iterations) ->
 
 get_env(AppName, Key, Default) ->
     case application:get_env(AppName, Key) of
-        undefined   -> Default;
+        undefined -> Default;
         {ok, Value} -> Value
     end.

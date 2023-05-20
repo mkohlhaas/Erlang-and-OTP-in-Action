@@ -10,11 +10,11 @@
 
 %% API
 -export([
-         init/0,
-         insert/2,
-         delete/1,
-         lookup/1
-        ]).
+    init/0,
+    insert/2,
+    delete/1,
+    lookup/1
+]).
 
 -record(key_to_pid, {key, pid}).
 
@@ -50,11 +50,11 @@ insert(Key, Pid) when is_pid(Pid) ->
 %%--------------------------------------------------------------------
 lookup(Key) ->
     Fun = fun() ->
-                  [{key_to_pid, Key, Pid}] = mnesia:read(key_to_pid, Key),
-                  Pid
-          end,
+        [{key_to_pid, Key, Pid}] = mnesia:read(key_to_pid, Key),
+        Pid
+    end,
     case mnesia:transaction(Fun) of
-        {atomic, Pid}      -> {ok, Pid};
+        {atomic, Pid} -> {ok, Pid};
         {aborted, _Reason} -> {error, not_found}
     end.
 
@@ -88,7 +88,7 @@ delete_schema() ->
     mnesia:delete_schema([node()]),
     mnesia:start().
 
-add_extra_nodes([Node|T]) ->
+add_extra_nodes([Node | T]) ->
     case mnesia:change_config(extra_db_nodes, [Node]) of
         {ok, [Node]} ->
             Res1 = mnesia:add_table_copy(key_to_pid, node(), ram_copies),

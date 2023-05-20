@@ -5,6 +5,7 @@
 -define(SLEEP_TIME, 2000).
 
 go() ->
-  %% just sleep for a while, then crash
-  timer:sleep(?SLEEP_TIME),
-  i_really_want_to_die = right_now. % matching will fail and cause an exception (on purpose)
+    %% just sleep for a while, then crash
+    timer:sleep(?SLEEP_TIME),
+    % matching will fail and cause an exception (on purpose)
+    i_really_want_to_die = right_now.

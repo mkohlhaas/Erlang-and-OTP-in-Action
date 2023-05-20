@@ -31,12 +31,12 @@
 %%--------------------------------------------------------------------
 start_link() ->
     Port =
-	case application:get_env(restful_interface, port) of
-	    {ok, Port_} ->
-		Port_;
-	    undefined -> 
-		?DEFAULT_PORT
-	end,
+        case application:get_env(restful_interface, port) of
+            {ok, Port_} ->
+                Port_;
+            undefined ->
+                ?DEFAULT_PORT
+        end,
     supervisor:start_link({local, ?SERVER}, ?MODULE, [Port]).
 
 %%%===================================================================
@@ -60,16 +60,16 @@ init([Port]) ->
     RestartStrategy = one_for_one,
     MaxRestarts = 0,
     MaxSecondsBetweenRestarts = 1,
-    
+
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-    
+
     Restart = temporary,
     Shutdown = brutal_kill,
     Type = worker,
-    
-    WebSocket = {ri_gws_impl, {ri_gws_impl, start_link, [Port]},
-		 Restart, Shutdown, Type, [ri_gws_impl]},
-    
+
+    WebSocket =
+        {ri_gws_impl, {ri_gws_impl, start_link, [Port]}, Restart, Shutdown, Type, [ri_gws_impl]},
+
     {ok, {SupFlags, [WebSocket]}}.
 
 %%%===================================================================

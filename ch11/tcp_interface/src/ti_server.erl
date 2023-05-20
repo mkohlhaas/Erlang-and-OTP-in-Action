@@ -4,8 +4,14 @@
 
 -export([start_link/1]).
 
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2,
+    terminate/2,
+    code_change/3
+]).
 
 -record(state, {lsock}).
 
@@ -41,7 +47,7 @@ code_change(_OldVsn, State, _Extra) ->
 handle_data(Socket, RawData, State) ->
     try
         {Function, RawArgList} =
-            lists:splitwith(fun (C) -> C =/= $[ end, RawData),
+            lists:splitwith(fun(C) -> C =/= $[ end, RawData),
         {ok, Toks, _Line} = erl_scan:string(RawArgList ++ ".", 1),
         {ok, Args} = erl_parse:parse_term(Toks),
         Result = apply(simple_cache, list_to_atom(Function), Args),

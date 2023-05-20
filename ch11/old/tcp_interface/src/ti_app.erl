@@ -35,17 +35,17 @@
 %% @end
 %%--------------------------------------------------------------------
 start(_StartType, _StartArgs) ->
-    Port = 
-	case application:get_env(tcp_interface, port) of
-	    {ok, Port_} -> Port_;
-	    undefined   -> ?DEFAULT_PORT
-	end,
+    Port =
+        case application:get_env(tcp_interface, port) of
+            {ok, Port_} -> Port_;
+            undefined -> ?DEFAULT_PORT
+        end,
 
     {ok, LSock} = gen_tcp:listen(Port, [{active, true}, {reuseaddr, true}]),
 
     case ti_sup:start_link(LSock) of
         {ok, Pid} ->
-	    ti_sup:start_child(),
+            ti_sup:start_child(),
             {ok, Pid};
         Error ->
             Error
@@ -67,5 +67,3 @@ stop(_State) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-

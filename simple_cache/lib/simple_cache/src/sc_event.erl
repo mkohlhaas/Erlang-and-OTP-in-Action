@@ -9,16 +9,17 @@
 -module(sc_event).
 
 %% API
--export([start_link/0,
-         lookup/1,
-         create/2,
-         replace/2,
-         delete/1,
-         delete_handler/2,
-         add_handler/2]).
+-export([
+    start_link/0,
+    lookup/1,
+    create/2,
+    replace/2,
+    delete/1,
+    delete_handler/2,
+    add_handler/2
+]).
 
 -define(SERVER, ?MODULE).
-
 
 %%====================================================================
 %% API

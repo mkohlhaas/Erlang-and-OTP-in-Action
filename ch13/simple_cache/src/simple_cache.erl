@@ -37,7 +37,7 @@ delete(Key) ->
     sc_event:delete(Key),
     case sc_store:lookup(Key) of
         {ok, Pid} ->
-	    sc_hbase:delete(?HBASE_NODE, Key),
+            sc_hbase:delete(?HBASE_NODE, Key),
             sc_element:delete(Pid);
         {error, _Reason} ->
             ok

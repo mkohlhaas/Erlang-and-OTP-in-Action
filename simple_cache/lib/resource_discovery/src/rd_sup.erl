@@ -11,8 +11,8 @@
 
 %% API
 -export([
-	 start_link/0
-	]).
+    start_link/0
+]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -51,19 +51,18 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    RestartStrategy           = one_for_one,
-    MaxRestarts               = 1000,
+    RestartStrategy = one_for_one,
+    MaxRestarts = 1000,
     MaxSecondsBetweenRestarts = 3600,
 
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
-    Restart  = permanent,
+    Restart = permanent,
     Shutdown = brutal_kill,
-    Type     = worker,
+    Type = worker,
 
-    ResourceDiscovery = {rd_server,
-			 {rd_server, start_link, []},
-			 Restart, Shutdown, Type, [rd_server]},
+    ResourceDiscovery =
+        {rd_server, {rd_server, start_link, []}, Restart, Shutdown, Type, [rd_server]},
 
     {ok, {SupFlags, [ResourceDiscovery]}}.
 

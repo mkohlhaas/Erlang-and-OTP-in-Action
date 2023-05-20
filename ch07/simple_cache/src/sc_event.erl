@@ -17,13 +17,13 @@
 % permanent, 1000, worker, [gen_event]}
 %
 start_link() ->
-  gen_event:start_link({local, ?SERVER}).
+    gen_event:start_link({local, ?SERVER}).
 
 add_handler(Handler, Args) ->
-  gen_event:add_handler(?SERVER, Handler, Args).
+    gen_event:add_handler(?SERVER, Handler, Args).
 
 delete_handler(Handler, Args) ->
-  gen_event:delete_handler(?SERVER, Handler, Args).
+    gen_event:delete_handler(?SERVER, Handler, Args).
 
 %%%%%%%
 % API %
@@ -33,20 +33,20 @@ delete_handler(Handler, Args) ->
 
 % create event
 create(Key, Value) ->
-  gen_event:notify(?SERVER, {create, {Key, Value}}).
+    gen_event:notify(?SERVER, {create, {Key, Value}}).
 
 % lookup event
 lookup(Key) ->
-  gen_event:notify(?SERVER, {lookup, Key}).
+    gen_event:notify(?SERVER, {lookup, Key}).
 
 % replace event
 replace(Key, Value) ->
-  gen_event:notify(?SERVER, {replace, {Key, Value}}).
+    gen_event:notify(?SERVER, {replace, {Key, Value}}).
 
 % delete event
 delete(Key) ->
-  gen_event:notify(?SERVER, {delete, Key}).
+    gen_event:notify(?SERVER, {delete, Key}).
 
 % timeout event
 timeout(Key) ->
-  gen_event:notify(?SERVER, {timeout, Key}).
+    gen_event:notify(?SERVER, {timeout, Key}).

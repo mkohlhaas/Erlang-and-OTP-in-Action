@@ -14,12 +14,14 @@
 -export([add_handler/0, delete_handler/0]).
 
 %% gen_event callbacks
--export([init/1,
-         handle_event/2,
-         handle_call/2,
-         handle_info/2,
-         code_change/3,
-         terminate/2]).
+-export([
+    init/1,
+    handle_event/2,
+    handle_call/2,
+    handle_info/2,
+    code_change/3,
+    terminate/2
+]).
 
 -record(state, {}).
 
@@ -27,7 +29,7 @@
 %% gen_event callbacks
 %%====================================================================
 %%--------------------------------------------------------------------
-%% @doc 
+%% @doc
 %% Adds this handler to the sc_event manager.
 %% @spec () -> ok | {'EXIT',Reason} | term()
 %% @end
@@ -36,7 +38,7 @@ add_handler() ->
     sc_event:add_handler(?MODULE, []).
 
 %%--------------------------------------------------------------------
-%% @doc 
+%% @doc
 %% Removes this handler to the sc_event manager.
 %% @spec () -> term() | {error,module_not_found} | {'EXIT',Reason}
 %% @end

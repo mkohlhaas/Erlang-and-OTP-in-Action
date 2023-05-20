@@ -16,15 +16,17 @@
 -include("eunit.hrl").
 
 behaviour_info(callbacks) ->
-    [{init,1},
-     {head, 3},
-     {get, 3},
-     {delete, 3},
-     {options, 4},
-     {post, 4},
-     {put, 4},
-     {trace, 4},
-     {other_methods, 4}];
+    [
+        {init, 1},
+        {head, 3},
+        {get, 3},
+        {delete, 3},
+        {options, 4},
+        {post, 4},
+        {put, 4},
+        {trace, 4},
+        {other_methods, 4}
+    ];
 behaviour_info(_Other) ->
     undefined.
 
@@ -44,7 +46,7 @@ start_link(Callback, IP, Port, UserArgs) ->
 %% @equiv start_link(Callback, DefaultIP, Port, UserArgs)
 start_link(Callback, Port, UserArgs) ->
     start_link(Callback, default_ip, Port, UserArgs).
-    
+
 %%--------------------------------------------------------------------
 %% @doc helper function for creating a very minimally specified
 %%      http message
@@ -54,24 +56,30 @@ start_link(Callback, Port, UserArgs) ->
 http_reply(Code, Headers, Body) when is_list(Body) ->
     http_reply(Code, Headers, list_to_binary(Body));
 http_reply(Code, Headers, Body) ->
-    list_to_binary(["HTTP/1.1 ", code_to_code_and_string(Code), "\r\n",
-		    format_headers(Headers),
-		    "Content-Length: ", integer_to_list(size(Body)), 
-		    "\r\n\r\n", Body]).
+    list_to_binary([
+        "HTTP/1.1 ",
+        code_to_code_and_string(Code),
+        "\r\n",
+        format_headers(Headers),
+        "Content-Length: ",
+        integer_to_list(size(Body)),
+        "\r\n\r\n",
+        Body
+    ]).
 
 %% @spec (Code) -> ok
-%% @equiv http_reply(Code, [{"Content-Type", "text/html"}], "") 
+%% @equiv http_reply(Code, [{"Content-Type", "text/html"}], "")
 http_reply(Code) ->
     http_reply(Code, [{"Content-Type", "text/html"}], <<>>).
 
-format_headers([{Header, Value}|T]) ->
-    [tos(Header), ": ", Value, "\r\n"|format_headers(T)];
+format_headers([{Header, Value} | T]) ->
+    [tos(Header), ": ", Value, "\r\n" | format_headers(T)];
 format_headers([]) ->
     [].
 
 tos(Val) when is_atom(Val) -> atom_to_list(Val);
-tos(Val)                   -> Val.
-    
+tos(Val) -> Val.
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -124,8 +132,7 @@ code_to_code_and_string(414) -> "414 Request-URI Too Large";
 code_to_code_and_string(415) -> "415 Unsupported Media Type";
 code_to_code_and_string(416) -> "416 Requested range not satisfiable";
 code_to_code_and_string(417) -> "417 Expectation Failed";
-code_to_code_and_string(421) ->
-    "421 There are too many connections from your internet address";
+code_to_code_and_string(421) -> "421 There are too many connections from your internet address";
 code_to_code_and_string(422) -> "422 Unprocessable Entity";
 code_to_code_and_string(423) -> "423 Locked";
 code_to_code_and_string(424) -> "424 Failed Dependency";
@@ -150,4 +157,4 @@ http_reply_test() ->
     Reply2 = <<"HTTP/1.1 200 OK\r\nheader: value\r\nContent-Length: 8\r\n\r\nall good">>,
     ?assertMatch(Reply2, http_reply(200, [{"header", "value"}], "all good")),
     ?assertMatch(Reply2, http_reply(200, [{"header", "value"}], <<"all good">>)),
-    ?assertMatch(Reply2, http_reply(200, [{"header", "value"}], ["all"," good"])).
+    ?assertMatch(Reply2, http_reply(200, [{"header", "value"}], ["all", " good"])).

@@ -48,8 +48,7 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    Server = {tr_server, {tr_server, start_link, []},
-              permanent, 2000, worker, [tr_server]},
+    Server = {tr_server, {tr_server, start_link, []}, permanent, 2000, worker, [tr_server]},
     Children = [Server],
     RestartStrategy = {one_for_one, 0, 1},
     {ok, {RestartStrategy, Children}}.

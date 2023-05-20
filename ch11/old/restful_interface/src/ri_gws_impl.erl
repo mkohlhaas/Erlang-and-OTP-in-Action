@@ -20,7 +20,7 @@
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Creates a gen_web_server process 
+%% Creates a gen_web_server process
 %%
 %% @spec start_link(SocketManager::pid()) -> {ok, Pid} | ignore | {error, Error}
 %% @end
@@ -45,15 +45,15 @@ init(_UserArgs) ->
 %% @spec (InitialRequestLine, Head, Body) -> Response
 %% @end
 %%--------------------------------------------------------------------
-get({_, _, {abs_path, <<$/,Key/binary>>}, _}, _Head, _UserState) ->
+get({_, _, {abs_path, <<$/, Key/binary>>}, _}, _Head, _UserState) ->
     error_logger:info_msg("Key ~p~n", [Key]),
     case simple_cache:lookup(Key) of
-	{ok, Value} ->
-	    Headers = [{"Content-Type", "text/html"}],
-	    gen_web_server:http_reply(200, Headers, Value);
-	{error, not_found} ->
-	    Headers = [{"Content-Type", "text/html"}],
-	    gen_web_server:http_reply(404, Headers, "Content Not Found")
+        {ok, Value} ->
+            Headers = [{"Content-Type", "text/html"}],
+            gen_web_server:http_reply(200, Headers, Value);
+        {error, not_found} ->
+            Headers = [{"Content-Type", "text/html"}],
+            gen_web_server:http_reply(404, Headers, "Content Not Found")
     end.
 
 %%--------------------------------------------------------------------
@@ -61,7 +61,7 @@ get({_, _, {abs_path, <<$/,Key/binary>>}, _}, _Head, _UserState) ->
 %% @spec (InitialRequestLine, Head, Body, UserArgs) -> Response
 %% @end
 %%--------------------------------------------------------------------
-put({_, _, {abs_path, <<$/,Key/binary>>}, _}, _Head, Body, _UserState) ->
+put({_, _, {abs_path, <<$/, Key/binary>>}, _}, _Head, Body, _UserState) ->
     simple_cache:insert(Key, Body),
     gen_web_server:http_reply(200).
 
@@ -70,7 +70,7 @@ put({_, _, {abs_path, <<$/,Key/binary>>}, _}, _Head, Body, _UserState) ->
 %% @spec (InitialRequestLine, Head, Body) -> Response
 %% @end
 %%--------------------------------------------------------------------
-delete({_, _, {abs_path, <<$/,Key/binary>>}, _}, _Head, _UserState) ->
+delete({_, _, {abs_path, <<$/, Key/binary>>}, _}, _Head, _UserState) ->
     simple_cache:delete(Key),
     gen_web_server:http_reply(200).
 

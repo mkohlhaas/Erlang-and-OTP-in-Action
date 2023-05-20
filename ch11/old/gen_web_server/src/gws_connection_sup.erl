@@ -68,25 +68,34 @@ init([Callback, IP, Port, UserArgs]) ->
     RestartStrategy = simple_one_for_one,
     MaxRestarts = 1000,
     MaxSecondsBetweenRestarts = 3600,
-    
+
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-    
+
     Restart = temporary,
     Shutdown = brutal_kill,
     Type = worker,
-    
+
     case IP of
-	default_ip -> 
-	    error_logger:info_msg("Start connection supervisor with ~p ~p ~p~n", [Port, Callback, UserArgs]),
-	    {ok, LSock} = gen_tcp:listen(Port, [binary, {active, false}, {packet, http_bin}, {reuseaddr, true}]);
-	IP ->
-	    error_logger:info_msg("Start connection supervisor with ~p ~p ~p ~p~n", [IP, Port, Callback, UserArgs]),
-	    {ok, LSock} = gen_tcp:listen(Port, [binary, {active, false}, {packet, http_bin}, {reuseaddr, true}, {ip, IP}])
+        default_ip ->
+            error_logger:info_msg("Start connection supervisor with ~p ~p ~p~n", [
+                Port, Callback, UserArgs
+            ]),
+            {ok, LSock} = gen_tcp:listen(Port, [
+                binary, {active, false}, {packet, http_bin}, {reuseaddr, true}
+            ]);
+        IP ->
+            error_logger:info_msg("Start connection supervisor with ~p ~p ~p ~p~n", [
+                IP, Port, Callback, UserArgs
+            ]),
+            {ok, LSock} = gen_tcp:listen(Port, [
+                binary, {active, false}, {packet, http_bin}, {reuseaddr, true}, {ip, IP}
+            ])
     end,
 
-    WebSocket = {gws_server, {gws_server, start_link, [Callback, LSock, UserArgs]},
-		 Restart, Shutdown, Type, [gws_server]},
-    
+    WebSocket =
+        {gws_server, {gws_server, start_link, [Callback, LSock, UserArgs]}, Restart, Shutdown, Type,
+            [gws_server]},
+
     {ok, {SupFlags, [WebSocket]}}.
 
 %%%===================================================================

@@ -2,7 +2,7 @@
 %%% @author Martin Logan <martinjlogan@Macintosh-2.local>
 %%% @copyright (C) 2009, Martin Logan
 %%% @doc
-%%%  Handle a socket connection for incomming http packets. 
+%%%  Handle a socket connection for incomming http packets.
 %%% @end
 %%% Created : 10 Sep 2009 by Martin Logan <martinjlogan@Macintosh-2.local>
 %%%-------------------------------------------------------------------
@@ -14,13 +14,28 @@
 -export([start_link/3]).
 
 %% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-	 terminate/2, code_change/3]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2,
+    terminate/2,
+    code_change/3
+]).
 
--define(SERVER, ?MODULE). 
+-define(SERVER, ?MODULE).
 
--record(state, {lsock, socket, request_line, headers = [], body = <<>>,
-		content_remaining = 0, callback, user_state, parent}).
+-record(state, {
+    lsock,
+    socket,
+    request_line,
+    headers = [],
+    body = <<>>,
+    content_remaining = 0,
+    callback,
+    user_state,
+    parent
+}).
 
 %%%===================================================================
 %%% API
@@ -97,47 +112,57 @@ handle_cast(_Request, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_info({http, _Socket, {http_header, _Length, <<"Expect">>, _, <<"100-continue">>}}, #state{headers = Headers} = State) ->
+handle_info(
+    {http, _Socket, {http_header, _Length, <<"Expect">>, _, <<"100-continue">>}},
+    #state{headers = Headers} = State
+) ->
     gen_tcp:send(State#state.socket, gen_web_server:http_reply(100)),
-    inet:setopts(State#state.socket, [{active,once}]),
-    {noreply, State#state{headers = [{'Expect', <<"100-continue">>}|Headers]}};
-handle_info({http, _Socket, {http_header, _Length, 'Content-Length', _, Value}}, #state{headers = Headers} = State) ->
+    inet:setopts(State#state.socket, [{active, once}]),
+    {noreply, State#state{headers = [{'Expect', <<"100-continue">>} | Headers]}};
+handle_info(
+    {http, _Socket, {http_header, _Length, 'Content-Length', _, Value}},
+    #state{headers = Headers} = State
+) ->
     ContentRemaining = list_to_integer(binary_to_list(Value)),
-    inet:setopts(State#state.socket, [{active,once}]),
-    {noreply, State#state{headers = [{'Content-Length', Value}|Headers], content_remaining = ContentRemaining}};
-handle_info({http, _Socket, {http_header, _Length, Key, _, Value}}, #state{headers = Headers} = State) ->
-    inet:setopts(State#state.socket, [{active,once}]),
-    {noreply, State#state{headers = [{Key, Value}|Headers]}};
+    inet:setopts(State#state.socket, [{active, once}]),
+    {noreply, State#state{
+        headers = [{'Content-Length', Value} | Headers], content_remaining = ContentRemaining
+    }};
+handle_info(
+    {http, _Socket, {http_header, _Length, Key, _, Value}}, #state{headers = Headers} = State
+) ->
+    inet:setopts(State#state.socket, [{active, once}]),
+    {noreply, State#state{headers = [{Key, Value} | Headers]}};
 handle_info({http, _Socket, {http_request, _Method, _Path, _HTTPVersion} = RequestLine}, State) ->
-    inet:setopts(State#state.socket, [{active,once}]),
+    inet:setopts(State#state.socket, [{active, once}]),
     {noreply, State#state{request_line = RequestLine}};
 handle_info({http, _Socket, http_eoh}, #state{content_remaining = 0} = State) ->
     Reply = callback(State),
     gen_tcp:send(State#state.socket, Reply),
     {stop, normal, State};
 handle_info({http, _Socket, http_eoh}, State) ->
-    inet:setopts(State#state.socket, [{active,once}, {packet, raw}]),
+    inet:setopts(State#state.socket, [{active, once}, {packet, raw}]),
     {noreply, State};
 handle_info({tcp, _Socket, Packet}, State) ->
-    PacketSize       = byte_size(Packet),
+    PacketSize = byte_size(Packet),
     ContentRemaining = State#state.content_remaining - PacketSize,
-    Body             = list_to_binary([State#state.body, Packet]),
+    Body = list_to_binary([State#state.body, Packet]),
     NewState = State#state{body = Body, content_remaining = ContentRemaining},
     case ContentRemaining of
-	0 ->
-	    Reply = callback(NewState),
-	    gen_tcp:send(State#state.socket, Reply),
-	    {stop, normal, State};
-	ContentLeftOver when ContentLeftOver > 0 ->
-	    inet:setopts(State#state.socket, [{active,once}]),
-	    {noreply, NewState}
+        0 ->
+            Reply = callback(NewState),
+            gen_tcp:send(State#state.socket, Reply),
+            {stop, normal, State};
+        ContentLeftOver when ContentLeftOver > 0 ->
+            inet:setopts(State#state.socket, [{active, once}]),
+            {noreply, NewState}
     end;
 handle_info({tcp_closed, _Socket}, State) ->
     {stop, normal, State};
 handle_info(timeout, #state{lsock = LSock, parent = Parent} = State) ->
     {ok, Socket} = gen_tcp:accept(LSock),
     gws_connection_sup:start_child(Parent),
-    inet:setopts(Socket,[{active,once}]),
+    inet:setopts(Socket, [{active, once}]),
     {noreply, State#state{socket = Socket}}.
 
 %%--------------------------------------------------------------------
@@ -168,12 +193,14 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-callback(State) -> 
-    #state{callback     = Callback,
-	   request_line = RequestLine,
-	   headers      = Headers,
-	   body         = Body,
-	   user_state   = UserState} = State,
+callback(State) ->
+    #state{
+        callback = Callback,
+        request_line = RequestLine,
+        headers = Headers,
+        body = Body,
+        user_state = UserState
+    } = State,
     handle_message(RequestLine, Headers, Body, Callback, UserState).
 
 handle_message({http_request, 'GET', _, _} = RequestLine, Headers, _Body, CallBack, UserState) ->
@@ -182,10 +209,9 @@ handle_message({http_request, 'DELETE', _, _} = RequestLine, Headers, _Body, Cal
     CallBack:delete(RequestLine, Headers, UserState);
 handle_message({http_request, 'HEAD', _, _} = RequestLine, Headers, _Body, CallBack, UserState) ->
     CallBack:head(RequestLine, Headers, UserState);
-
 handle_message({http_request, 'POST', _, _} = RequestLine, Headers, Body, CallBack, UserState) ->
     CallBack:post(RequestLine, Headers, Body, UserState);
-handle_message({http_request,'PUT',_,_} = RequestLine, Headers, Body, CallBack, UserState) ->
+handle_message({http_request, 'PUT', _, _} = RequestLine, Headers, Body, CallBack, UserState) ->
     CallBack:put(RequestLine, Headers, Body, UserState);
 handle_message({http_request, 'TRACE', _, _} = RequestLine, Headers, Body, CallBack, UserState) ->
     CallBack:head(RequestLine, Headers, Body, UserState);
@@ -193,4 +219,3 @@ handle_message({http_request, 'OPTIONS', _, _} = RequestLine, Headers, Body, Cal
     CallBack:options(RequestLine, Headers, Body, UserState);
 handle_message(RequestLine, Headers, Body, CallBack, UserState) ->
     CallBack:other_methods(RequestLine, Headers, Body, UserState).
-

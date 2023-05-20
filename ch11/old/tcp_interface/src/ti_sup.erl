@@ -63,16 +63,15 @@ init([LSock]) ->
     RestartStrategy = simple_one_for_one,
     MaxRestarts = 0,
     MaxSecondsBetweenRestarts = 1,
-    
+
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-    
+
     Restart = temporary,
     Shutdown = brutal_kill,
     Type = worker,
-    
-    AChild = {ti_server, {ti_server, start_link, [LSock]},
-	      Restart, Shutdown, Type, [ti_server]},
-    
+
+    AChild = {ti_server, {ti_server, start_link, [LSock]}, Restart, Shutdown, Type, [ti_server]},
+
     {ok, {SupFlags, [AChild]}}.
 
 %%%===================================================================

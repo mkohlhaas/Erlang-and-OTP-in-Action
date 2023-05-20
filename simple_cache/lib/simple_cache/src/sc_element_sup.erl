@@ -12,9 +12,9 @@
 
 %% API
 -export([
-	 start_link/0,
-	 start_child/2
-	]).
+    start_link/0,
+    start_child/2
+]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -73,8 +73,7 @@ init([]) ->
     Shutdown = brutal_kill,
     Type = worker,
 
-    AChild = {sc_element, {sc_element, start_link, []},
-	      Restart, Shutdown, Type, [sc_element]},
+    AChild = {sc_element, {sc_element, start_link, []}, Restart, Shutdown, Type, [sc_element]},
 
     {ok, {SupFlags, [AChild]}}.
 

@@ -3,21 +3,29 @@
 -behaviour(gen_server).
 
 -export([
-         start_link/0,
-         add_target_resource_type/1,
-         add_local_resource/2,
-         fetch_resources/1,
-         trade_resources/0
-        ]).
+    start_link/0,
+    add_target_resource_type/1,
+    add_local_resource/2,
+    fetch_resources/1,
+    trade_resources/0
+]).
 
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2,
+    terminate/2,
+    code_change/3
+]).
 
 -define(SERVER, ?MODULE).
 
--record(state, {target_resource_types,
-                local_resource_tuples,
-                found_resource_tuples}).
+-record(state, {
+    target_resource_types,
+    local_resource_tuples,
+    found_resource_tuples
+}).
 
 %% API
 
@@ -39,9 +47,11 @@ trade_resources() ->
 %% Callbacks
 
 init([]) ->
-    {ok, #state{target_resource_types = [],
-                local_resource_tuples = dict:new(),
-                found_resource_tuples = dict:new()}}.
+    {ok, #state{
+        target_resource_types = [],
+        local_resource_tuples = dict:new(),
+        found_resource_tuples = dict:new()
+    }}.
 
 handle_call({fetch_resources, Type}, _From, State) ->
     {reply, dict:find(Type, State#state.found_resource_tuples), State}.
@@ -59,23 +69,32 @@ handle_cast(trade_resources, State) ->
     AllNodes = [node() | nodes()],
     lists:foreach(
         fun(Node) ->
-            gen_server:cast({?SERVER, Node},
-                            {trade_resources, {node(), ResourceTuples}})
+            gen_server:cast(
+                {?SERVER, Node},
+                {trade_resources, {node(), ResourceTuples}}
+            )
         end,
-        AllNodes),
+        AllNodes
+    ),
     {noreply, State};
-handle_cast({trade_resources, {ReplyTo, Remotes}},
-           #state{local_resource_tuples = Locals,
-		  target_resource_types = TargetTypes,
-		  found_resource_tuples = OldFound} = State) ->
+handle_cast(
+    {trade_resources, {ReplyTo, Remotes}},
+    #state{
+        local_resource_tuples = Locals,
+        target_resource_types = TargetTypes,
+        found_resource_tuples = OldFound
+    } = State
+) ->
     FilteredRemotes = resources_for_types(TargetTypes, Remotes),
     NewFound = add_resources(FilteredRemotes, OldFound),
     case ReplyTo of
         noreply ->
             ok;
         _ ->
-            gen_server:cast({?SERVER, ReplyTo},
-                            {trade_resources, {noreply, Locals}})
+            gen_server:cast(
+                {?SERVER, ReplyTo},
+                {trade_resources, {noreply, Locals}}
+            )
     end,
     {noreply, State#state{found_resource_tuples = NewFound}}.
 
@@ -88,10 +107,9 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-
 %% Utilities
 
-add_resources([{Type, Identifier}|T], Dict) ->
+add_resources([{Type, Identifier} | T], Dict) ->
     add_resources(T, add_resource(Type, Identifier, Dict));
 add_resources([], Dict) ->
     Dict.
