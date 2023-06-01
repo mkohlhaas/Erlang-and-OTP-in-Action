@@ -27,6 +27,7 @@
 
 -define(SERVER, ?MODULE).
 -define(DEFAULT_PORT, 1055).
+-define(TIMEOUT, 0).
 
 -record(state, {port, sock, lsock, request_count = 0}).
 
@@ -81,7 +82,7 @@ stop() ->
 
 init([Port]) ->
     {ok, LSock} = gen_tcp:listen(Port, [{active, true}]),
-    {ok, #state{port = Port, lsock = LSock}, 0}.
+    {ok, #state{port = Port, lsock = LSock}, ?TIMEOUT}.
 
 handle_call(get_count, _From, State) ->
     {reply, {ok, State#state.request_count}, State}.
