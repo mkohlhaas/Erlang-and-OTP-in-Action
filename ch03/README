@@ -33,4 +33,5 @@ Connection closed by foreign host.
 
 You can call API functions at any time while interacting with the server via telnet.
 2> tr_server:get_count().
-3> tr_server:stop().
+3> regs(). % see that tr_server has been registered
+4> tr_server:stop().
