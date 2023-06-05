@@ -1,6 +1,6 @@
 -module(die_please2).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 -export([start_link/0]).
 -export([

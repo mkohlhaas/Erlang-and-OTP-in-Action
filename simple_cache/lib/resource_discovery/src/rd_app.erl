@@ -7,7 +7,7 @@
 %%%----------------------------------------------------------------,
 -module(rd_app).
 
--behaviour(application).
+-behavior(application).
 
 %% Application callbacks
 -export([start/2, stop/1]).

@@ -10,7 +10,7 @@
 
 -module(tr_server).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 -include_lib("eunit/include/eunit.hrl").
 

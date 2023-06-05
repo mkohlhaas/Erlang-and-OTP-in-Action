@@ -18,7 +18,7 @@
 %%%-------------------------------------------------------------------
 -module(rd_server).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 %% API
 -export([

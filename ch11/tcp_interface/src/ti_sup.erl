@@ -1,6 +1,6 @@
 -module(ti_sup).
 
--behaviour(supervisor).
+-behavior(supervisor).
 
 %% API
 -export([start_link/1, start_child/0]).

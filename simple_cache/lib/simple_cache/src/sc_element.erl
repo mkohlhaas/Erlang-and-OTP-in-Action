@@ -8,7 +8,7 @@
 %%%-------------------------------------------------------------------
 -module(sc_element).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 %% API
 -export([

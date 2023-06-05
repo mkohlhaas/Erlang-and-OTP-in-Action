@@ -5,7 +5,7 @@
 
 -module(gen_server_skel).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 -export([
     init/1,

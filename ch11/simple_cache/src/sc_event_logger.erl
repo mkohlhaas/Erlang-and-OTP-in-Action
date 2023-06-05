@@ -1,6 +1,6 @@
 -module(sc_event_logger).
 
--behaviour(gen_event).
+-behavior(gen_event).
 
 -export([add_handler/0, delete_handler/0]).
 

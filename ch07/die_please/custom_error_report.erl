@@ -1,6 +1,6 @@
 -module(custom_error_report).
 
--behaviour(gen_event).
+-behavior(gen_event).
 
 %% API
 -export([register_with_logger/0]).

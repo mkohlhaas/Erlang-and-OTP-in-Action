@@ -1,6 +1,6 @@
 -module(my_app_sup).
 
--behaviour(supervisor).
+-behavior(supervisor).
 
 -export([start_link/0]).
 -export([init/1]).

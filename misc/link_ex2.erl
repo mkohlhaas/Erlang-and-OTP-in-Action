@@ -1,6 +1,6 @@
 -module(link_ex2).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 -export([start_link/0, ping/0, ping_error/0]).
 -export([

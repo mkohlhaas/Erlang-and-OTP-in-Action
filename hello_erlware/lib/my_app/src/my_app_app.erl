@@ -1,13 +1,13 @@
 %%%----------------------------------------------------------------
 %%% @author Martin Logan <martinjlogan@erlware.org>
-%%% @doc Application behaviour implementation for tcp_rpc.
+%%% @doc Application behavior implementation for tcp_rpc.
 %%%
 %%% @copyright 2008 Martin Logan
 %%% @end
 %%%----------------------------------------------------------------,
 -module(my_app_app).
 
--behaviour(application).
+-behavior(application).
 
 %% Application callbacks
 -export([

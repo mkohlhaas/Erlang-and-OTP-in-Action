@@ -1,13 +1,13 @@
 %%%----------------------------------------------------------------
 %%% @author Martin Logan & Eric Merritt <contact@erlware.org>
 %%% @doc
-%%%   Application behaviour implementation for simple_cache.
+%%%   Application behavior implementation for simple_cache.
 %%% @copyright 2008 Martin Logan & Eric Merritt
 %%% @end
 %%%----------------------------------------------------------------,
 -module(sc_app).
 
--behaviour(application).
+-behavior(application).
 
 %% Application callbacks
 -export([start/2, stop/1]).

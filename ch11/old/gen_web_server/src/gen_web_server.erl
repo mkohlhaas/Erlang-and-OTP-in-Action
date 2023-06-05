@@ -11,11 +11,11 @@
 %% API
 -export([start_link/4, start_link/3, http_reply/1, http_reply/3]).
 
--export([behaviour_info/1]).
+-export([behavior_info/1]).
 
 -include("eunit.hrl").
 
-behaviour_info(callbacks) ->
+behavior_info(callbacks) ->
     [
         {init, 1},
         {head, 3},
@@ -27,7 +27,7 @@ behaviour_info(callbacks) ->
         {trace, 4},
         {other_methods, 4}
     ];
-behaviour_info(_Other) ->
+behavior_info(_Other) ->
     undefined.
 
 %%%===================================================================
@@ -35,7 +35,7 @@ behaviour_info(_Other) ->
 %%%===================================================================
 
 %%--------------------------------------------------------------------
-%% @doc Start a new gen_web_server behaviour container.
+%% @doc Start a new gen_web_server behavior container.
 %% @spec (Callback, IP, Port, UserArgs) -> {ok, Pid}
 %% @end
 %%--------------------------------------------------------------------

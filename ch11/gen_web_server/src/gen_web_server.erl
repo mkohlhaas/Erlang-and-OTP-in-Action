@@ -6,9 +6,9 @@
     http_reply/1, http_reply/2, http_reply/3
 ]).
 
--export([behaviour_info/1]).
+-export([behavior_info/1]).
 
-behaviour_info(callbacks) ->
+behavior_info(callbacks) ->
     [
         {init, 1},
         {head, 3},
@@ -20,7 +20,7 @@ behaviour_info(callbacks) ->
         {trace, 4},
         {other_methods, 4}
     ];
-behaviour_info(_Other) ->
+behavior_info(_Other) ->
     undefined.
 
 %%%===================================================================

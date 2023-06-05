@@ -1,6 +1,6 @@
 -module(jp_app).
 
--behaviour(application).
+-behavior(application).
 
 -export([
     start/2,

@@ -1,6 +1,6 @@
 -module(ti_app).
 
--behaviour(application).
+-behavior(application).
 
 -export([start/2, stop/1]).
 

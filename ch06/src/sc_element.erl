@@ -3,7 +3,7 @@
 
 -module(sc_element).
 
--behaviour(gen_server).
+-behavior(gen_server).
 
 -export([start_link/2, create/2, create/1, fetch/1, replace/2, delete/1]).
 -export([

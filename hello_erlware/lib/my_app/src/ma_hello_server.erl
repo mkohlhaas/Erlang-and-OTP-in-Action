@@ -1,5 +1,5 @@
 -module(ma_hello_server).
--behaviour(gen_server).
+-behavior(gen_server).
 
 -include("eunit.hrl").
 

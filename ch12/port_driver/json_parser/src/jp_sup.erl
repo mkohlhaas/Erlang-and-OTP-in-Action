@@ -1,6 +1,6 @@
 -module(jp_sup).
 
--behaviour(supervisor).
+-behavior(supervisor).
 
 %% API
 -export([start_link/0]).

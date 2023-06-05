@@ -1,6 +1,6 @@
 -module(hi_server).
 
--behaviour(gen_web_server).
+-behavior(gen_web_server).
 
 %% API
 -export([start_link/1, start_link/2]).

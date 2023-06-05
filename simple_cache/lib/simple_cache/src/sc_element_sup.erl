@@ -8,7 +8,7 @@
 %%%-------------------------------------------------------------------
 -module(sc_element_sup).
 
--behaviour(supervisor).
+-behavior(supervisor).
 
 %% API
 -export([
