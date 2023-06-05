@@ -4,7 +4,7 @@ Error logging in Erlang.
 'die_please2.erl' is a gen_server (OTP) that crashes.
 'custom_error_report.erl' implements a gen_event server with custom reports.
 
-die_please2 will generate a Crash report with or without SASL running.
+die_please2 will generate a Crash report with or without SASL (System Architecture Support Libaries) running.
 (Wasn't like that at the time the book was written. Only with SASL it generated a Crash report.)
 
 die_please1 will still generate basic error messages even after SASL is started. No OTP integration.
@@ -174,7 +174,7 @@ Using the custom_error_report:
 8> custom_error_report:register_with_logger().
 ok
 9> error_logger:info_msg("This is a message~n").
-INFO <<0.82.0>> This is a message                          <<< custom error report
+CUSTOM INFO <<0.82.0>> This is a message                          <<< custom error report
 =INFO REPORT==== 10-Mar-2023::06:23:52.707623 ===          <<< standard error handler
 This is a message
 

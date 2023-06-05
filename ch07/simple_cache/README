@@ -3,8 +3,18 @@ Create Your Own Event Stream
 Same architecture as error_logger/logger creating your own gen_event container.
 
 Two more modules added:
-src/sc_event.erl        (creates event stream)
-src/sc_event_logger.erl (event handler)
+
+1. Event manager/gen_event container:
+src/sc_event.erl
+    Just start the thing and add/delete handlers. Really nothing else to do.
+    gen_event:start_link(...).
+    gen_event:add_handler(...).
+    gen_event:delete_handler(...).
+
+2. Event handler:
+src/sc_event_logger.erl
+    Adds itself to the event manager.
+    Implements gen_event behavior.
 
 In the API module src/simple_cache.erl we fire events using functions from src/sc_event.erl.
 
