@@ -21,7 +21,7 @@ To run the program, start Erlang like this:
 $ erl -sname mynode1 -pa ./simple_cache/ebin -pa ./resource_discovery/ebin/
 
 Then in the Erlang shell:
-1> observer:start().
+1> observer:start(). % optional
 ok
 2> application:start(sasl).
 ok
@@ -45,9 +45,9 @@ $ erl -sname mynode3 -pa ./simple_cache/ebin -pa ./resource_discovery/ebin/
 Then try inserting something in the cache on one node, and looking it up on another node.
 
 Typical code you can use for playing around, e.g.:
-[ simple_cache:insert(X,X) || X <- lists:seq(1,10) ].        <<< on node mynode1
-[ simple_cache:insert(X,X) || X <- lists:seq(11,20) ].       <<< on node mynode2
-[ simple_cache:lookup(X) || X <- lists:seq(1,20) ].          <<< on both nodes
+[ simple_cache:insert(X,X) || X <- lists:seq(1,10) ].        % on node mynode1
+[ simple_cache:insert(X,X) || X <- lists:seq(11,20) ].       % on node mynode2
+[ simple_cache:lookup(X) || X <- lists:seq(1,20) ].          % on both nodes
 
 Lease time is set to 20 seconds.
 

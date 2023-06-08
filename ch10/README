@@ -9,9 +9,14 @@ A release runs only necessary modules in the so-called target system.
 3. A release aggregates a number of versioned applications along with metadata on how to manage the system.
 4. Installing a release on a host machine produces a target system.
 
-Different tools to make a release: systools, reltool, relx
+Different tools to make a release: systools, reltool, relx.
 
-I.) How to create a release (using systools):
+rebar3 incorporates relx and makes all other tools OBSOLETE!!!
+  -> https://adoptingerlang.org/docs/production/releases/
+relx uses systools which is part of SASL under the hood!
+  -> https://www.erlang.org/doc/man/systools.html
+
+I.) How to create a release using systools:
 
 1. Decide which applications should be included.
 2. Create a release metadata (.rel) file describing the release's contents.     <<< .rel file
@@ -21,7 +26,7 @@ I.) How to create a release (using systools):
 
 Simple Cache Example:
 1. Decide which applications should be included.
-   simple_cache, resource_discovery, stdlib, kernel, sasl, and mnesia
+   simple_cache, resource_discovery, stdlib, kernel, sasl, mnesia
 2. Create a release metadata (.rel) file describing the release's contents.
    $ erl -man rel
    see simple_cache.rel (You can put this file in any directory you want during development.)
