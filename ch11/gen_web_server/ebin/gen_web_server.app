@@ -1,5 +1,5 @@
 {application, gen_web_server,
- [{description, "A generic web server behaviour"},
+ [{description, "A generic web server behavior"},
   {vsn, "0.1.0"},
   {modules, [gen_web_server,
              gws_connection_sup,
